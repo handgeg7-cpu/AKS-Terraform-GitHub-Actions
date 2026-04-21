@@ -35,6 +35,13 @@ pipeline {
                 url: 'https://github.com/handgeg7-cpu/AKS-Terraform-GitHub-Actions.git'
             }
         }
+        stage('Check Workspace Files') {
+             steps {
+                    sh 'pwd'
+                     sh 'ls -la'
+                     sh 'ls -la aks'
+    }
+}
 
         stage('Terraform Init') {
             steps {
