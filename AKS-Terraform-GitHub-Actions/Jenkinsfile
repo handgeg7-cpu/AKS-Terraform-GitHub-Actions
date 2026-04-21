@@ -1,0 +1,67 @@
+properties([
+    parameters([
+        string(
+            defaultValue: 'dev',
+            name: 'Environment'
+        ),
+        choice(
+            choices: ['plan', 'apply', 'destroy'],
+            name: 'Terraform_Action'
+        )
+    ])
+])
+
+pipeline {
+    agent any
+
+    environment {
+        ARM_CLIENT_ID       = credentials('azure-client-id')
+        ARM_CLIENT_SECRET   = credentials('azure-client-secret')
+        ARM_TENANT_ID       = credentials('azure-tenant-id')
+        ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+    }
+
+    stages {
+
+        stage('Preparing') {
+            steps {
+                sh 'echo Preparing Terraform Deployment for Azure AKS'
+            }
+        }
+
+        stage('Git Pulling') {
+            steps {
+                git branch: 'master',
+                    url: 'https://github.com/AmanPathak-DevOps/EKS-Terraform-GitHub-Actions.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform -chdir=aks/ init'
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                sh 'terraform -chdir=aks/ validate'
+            }
+        }
+
+        stage('Terraform Action') {
+            steps {
+                script {
+                    if (params.Terraform_Action == 'plan') {
+                        sh "terraform -chdir=aks/ plan -var-file=${params.Environment}.tfvars"
+                    } else if (params.Terraform_Action == 'apply') {
+                        sh "terraform -chdir=aks/ apply -var-file=${params.Environment}.tfvars -auto-approve"
+                    } else if (params.Terraform_Action == 'destroy') {
+                        sh "terraform -chdir=aks/ destroy -var-file=${params.Environment}.tfvars -auto-approve"
+                    } else {
+                        error "Invalid Terraform_Action value"
+                    }
+                }
+            }
+        }
+    }
+}
