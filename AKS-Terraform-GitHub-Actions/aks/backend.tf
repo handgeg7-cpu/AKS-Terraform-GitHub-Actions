@@ -1,20 +1,22 @@
 terraform {
   required_version = "~> 1.9.3"
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.49.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0.0"
     }
   }
-  backend "s3" {
-    bucket         = "dev-aman-tf-bucket"
-    region         = "us-east-1"
-    key            = "eks/terraform.tfstate"
-    dynamodb_table = "Lock-Files"
-    encrypt        = true
+
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "tfstateaccount"
+    container_name       = "tfstate"
+    key                  = "aks/terraform.tfstate"
   }
 }
 
-provider "aws" {
-  region = var.aws-region
+provider "azurerm" {
+  features {}
+  subscription_id = var.azure_subscription_id
+  tenant_id       = var.azure_tenant_id
 }
