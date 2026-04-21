@@ -48,19 +48,17 @@ pipeline {
             }
         }
 
-        stage('Terraform Action') {
-            steps {
-                script {
-                    if (params.Terraform_Action == 'plan') {
-                        sh "terraform plan -var-file=${params.Environment}.tfvars"
-                    } else if (params.Terraform_Action == 'apply') {
-                        sh "terraform apply -var-file=${params.Environment}.tfvars -auto-approve"
-                    } else if (params.Terraform_Action == 'destroy') {
-                        sh "terraform destroy -var-file=${params.Environment}.tfvars -auto-approve"
-                    } else {
-                        error "Invalid Terraform_Action value"
-                    }
-                }
+stage('Terraform Action') {
+    steps {
+        script {
+            if (params.Terraform_Action == 'plan') {
+                sh "terraform plan -var-file=aks/${params.Environment}.tfvars"
+            } else if (params.Terraform_Action == 'apply') {
+                sh "terraform apply -var-file=aks/${params.Environment}.tfvars -auto-approve"
+            } else if (params.Terraform_Action == 'destroy') {
+                sh "terraform destroy -var-file=aks/${params.Environment}.tfvars -auto-approve"
+            } else {
+                error "Invalid Terraform_Action value"
             }
         }
     }
