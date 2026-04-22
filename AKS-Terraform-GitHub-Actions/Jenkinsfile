@@ -41,27 +41,27 @@ pipeline {
 
         stage('Check Workspace Files') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
-                sh 'ls -la ${TF_DIR}'
+                sh "pwd"
+                sh "ls -la"
+                sh "ls -la ${TF_DIR}"
             }
         }
 
         stage('Clean Terraform Cache') {
             steps {
-                sh 'rm -rf ${TF_DIR}/.terraform'
+                sh "rm -rf ${TF_DIR}/.terraform"
             }
         }
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform -chdir=${TF_DIR} init'
+                sh "terraform -chdir=${TF_DIR} init"
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform -chdir=${TF_DIR} validate'
+                sh "terraform -chdir=${TF_DIR} validate"
             }
         }
 
@@ -70,7 +70,9 @@ pipeline {
                 expression { params.Terraform_Action == 'plan' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} plan -var-file=${params.Environment}.tfvars'
+                script {
+                    sh "terraform -chdir=${TF_DIR} plan -var-file=${params.Environment}.tfvars"
+                }
             }
         }
 
@@ -79,7 +81,9 @@ pipeline {
                 expression { params.Terraform_Action == 'apply' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} apply -var-file=${params.Environment}.tfvars'
+                script {
+                    sh "terraform -chdir=${TF_DIR} apply -var-file=${params.Environment}.tfvars -auto-approve"
+                }
             }
         }
 
@@ -88,7 +92,9 @@ pipeline {
                 expression { params.Terraform_Action == 'destroy' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} destroy -var-file=${params.Environment}.tfvars -auto-approve'
+                script {
+                    sh "terraform -chdir=${TF_DIR} destroy -var-file=${params.Environment}.tfvars -auto-approve"
+                }
             }
         }
     }
