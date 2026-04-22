@@ -26,8 +26,8 @@ pipeline {
 
         stage('Preparing') {
             steps {
-                sh 'echo Starting Terraform Deployment for Azure AKS'
-                sh 'echo Selected Action: ${Terraform_Action}'
+                echo "Selected Environment = ${params.Environment}"
+                echo "Selected Action = ${params.Terraform_Action}"
             }
         }
 
@@ -70,7 +70,7 @@ pipeline {
                 expression { params.Terraform_Action == 'plan' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} plan -var-file=${Environment}.tfvars'
+                sh 'terraform -chdir=${TF_DIR} plan -var-file=${params.Environment}.tfvars'
             }
         }
 
@@ -79,7 +79,7 @@ pipeline {
                 expression { params.Terraform_Action == 'apply' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} apply -var-file=${Environment}.tfvars -auto-approve'
+                sh 'terraform -chdir=${TF_DIR} apply -var-file=${params.Environment}.tfvars'
             }
         }
 
@@ -88,7 +88,7 @@ pipeline {
                 expression { params.Terraform_Action == 'destroy' }
             }
             steps {
-                sh 'terraform -chdir=${TF_DIR} destroy -var-file=${Environment}.tfvars -auto-approve'
+                sh 'terraform -chdir=${TF_DIR} destroy -var-file=${params.Environment}.tfvars -auto-approve'
             }
         }
     }
