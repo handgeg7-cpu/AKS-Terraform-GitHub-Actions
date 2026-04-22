@@ -60,7 +60,7 @@ pipeline {
             steps {
                 script {
                     if (params.Terraform_Action == 'plan') {
-                        sh "terraform -chdir=aks plan -var-file=aks/dev.tfvars"
+                        sh "terraform -chdir=aks plan -var-file=dev.tfvars"
                     } 
                     else if (params.Terraform_Action == 'apply') {
                         sh "terraform -chdir=aks apply -var-file=${params.Environment}.tfvars -auto-approve"
