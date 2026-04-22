@@ -41,9 +41,14 @@ pipeline {
             steps {
                 sh 'pwd'
                 sh 'ls -la'
-                sh 'ls -la aks'
+                sh 'ls -la AKS-Terraform-GitHub-Actions/aks'
             }
-        }
+        }  
+        stage('Clean Terraform Cache') {
+                steps {
+                  sh 'rm -rf AKS-Terraform-GitHub-Actions/aks/.terraform'
+    }
+}
 
         stage('Terraform Init') {
             steps {
