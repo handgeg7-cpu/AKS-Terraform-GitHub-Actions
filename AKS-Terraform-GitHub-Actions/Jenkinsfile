@@ -32,17 +32,18 @@ pipeline {
         stage('Git Pulling') {
             steps {
                 git branch: 'master',
-                credentialsId: 'github-token',
-                url: 'https://github.com/handgeg7-cpu/AKS-Terraform-GitHub-Actions.git'
+                    credentialsId: 'github-token',
+                    url: 'https://github.com/handgeg7-cpu/AKS-Terraform-GitHub-Actions.git'
             }
         }
+
         stage('Check Workspace Files') {
-             steps {
-                    sh 'pwd'
-                     sh 'ls -la'
-                     sh 'ls -la aks'
-    }
-}
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+                sh 'ls -la aks'
+            }
+        }
 
         stage('Terraform Init') {
             steps {
@@ -58,21 +59,19 @@ pipeline {
 
         stage('Terraform Action') {
             steps {
-                stage('Terraform Action') {
-            steps {
-               script {
-                if (params.Terraform_Action == 'plan') {
-                    sh "terraform -chdir=aks plan -var-file=${params.Environment}.tfvars"
-                } else if (params.Terraform_Action == 'apply') {
-                    sh "terraform -chdir=aks apply -var-file=${params.Environment}.tfvars -auto-approve"
-             } else if (params.Terraform_Action == 'destroy') {
-                    sh "terraform -chdir=aks destroy -var-file=${params.Environment}.tfvars -auto-approve"
-                } else {
-                   error "Invalid Terraform_Action value"
-            }
+                script {
+                    if (params.Terraform_Action == 'plan') {
+                        sh "terraform -chdir=aks plan -var-file=${params.Environment}.tfvars"
+                    } else if (params.Terraform_Action == 'apply') {
+                        sh "terraform -chdir=aks apply -var-file=${params.Environment}.tfvars -auto-approve"
+                    } else if (params.Terraform_Action == 'destroy') {
+                        sh "terraform -chdir=aks destroy -var-file=${params.Environment}.tfvars -auto-approve"
+                    } else {
+                        error "Invalid Terraform_Action value"
+                    }
+                }
             }
         }
-    }
 
     }
 }
