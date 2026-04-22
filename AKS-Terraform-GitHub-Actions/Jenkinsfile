@@ -19,13 +19,15 @@ pipeline {
         ARM_CLIENT_SECRET   = credentials('azure-client-secret')
         ARM_TENANT_ID       = credentials('azure-tenant-id')
         ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+        TF_DIR = "AKS-Terraform-GitHub-Actions/aks"
     }
 
     stages {
 
         stage('Preparing') {
             steps {
-                sh 'echo Preparing Terraform Deployment for Azure AKS'
+                sh 'echo Starting Terraform Deployment for Azure AKS'
+                sh 'echo Selected Action: ${Terraform_Action}'
             }
         }
 
@@ -41,42 +43,53 @@ pipeline {
             steps {
                 sh 'pwd'
                 sh 'ls -la'
-                sh 'ls -la AKS-Terraform-GitHub-Actions/aks'
+                sh 'ls -la ${TF_DIR}'
             }
-        }  
+        }
+
         stage('Clean Terraform Cache') {
-                steps {
-                  sh 'rm -rf AKS-Terraform-GitHub-Actions/aks/.terraform'
-    }
-}
+            steps {
+                sh 'rm -rf ${TF_DIR}/.terraform'
+            }
+        }
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform -chdir=AKS-Terraform-GitHub-Actions/aks init'
+                sh 'terraform -chdir=${TF_DIR} init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform -chdir=AKS-Terraform-GitHub-Actions/aks validate'
+                sh 'terraform -chdir=${TF_DIR} validate'
             }
         }
 
-        stage('Terraform Action') {
+        stage('Terraform Plan') {
+            when {
+                expression { params.Terraform_Action == 'plan' }
+            }
             steps {
-                script {
-                    if (params.Terraform_Action == 'plan') {
-                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks plan -var-file=${params.Environment}.tfvars"
-                    } else if (params.Terraform_Action == 'apply') {
-                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks apply -var-file=${params.Environment}.tfvars -auto-approve"
-                    } else if (params.Terraform_Action == 'destroy') {
-                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks destroy -var-file=${params.Environment}.tfvars -auto-approve"
-                    } else {
-                        error "Invalid Terraform_Action value"
-                    }
-                }
+                sh 'terraform -chdir=${TF_DIR} plan -var-file=${Environment}.tfvars'
             }
         }
 
+        stage('Terraform Apply') {
+            when {
+                expression { params.Terraform_Action == 'apply' }
+            }
+            steps {
+                sh 'terraform -chdir=${TF_DIR} apply -var-file=${Environment}.tfvars -auto-approve'
+            }
+        }
+
+        stage('Terraform Destroy') {
+            when {
+                expression { params.Terraform_Action == 'destroy' }
+            }
+            steps {
+                sh 'terraform -chdir=${TF_DIR} destroy -var-file=${Environment}.tfvars -auto-approve'
+            }
+        }
     }
 }
