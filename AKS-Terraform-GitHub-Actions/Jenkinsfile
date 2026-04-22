@@ -33,7 +33,7 @@ pipeline {
             steps {
                 git branch: 'master',
                 credentialsId: 'github-token',
-                url: 'https://github.com/handgeg7-cpu/aks-terraform-jenkins.git'
+                url: 'https://github.com/handgeg7-cpu/AKS-Terraform-GitHub-Actions.git'
             }
         }
         stage('Check Workspace Files') {
