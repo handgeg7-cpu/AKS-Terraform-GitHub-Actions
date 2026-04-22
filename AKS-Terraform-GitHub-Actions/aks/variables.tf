@@ -21,8 +21,9 @@ variable "azure-region" {
 variable "node_vm_sizes" {
   description = "VM size for AKS nodes"
   type        = string
-  default     = "Standard_DS2_v2"
+  default     = "Standard_DC2s_v3"
 }
+
 
 variable "desired_capacity" {
   description = "Number of nodes"
