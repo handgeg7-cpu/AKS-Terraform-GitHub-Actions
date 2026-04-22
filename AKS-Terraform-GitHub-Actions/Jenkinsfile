@@ -47,13 +47,13 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform -chdir=aks init'
+                sh 'terraform -chdir=AKS-Terraform-GitHub-Actions/aks init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform -chdir=aks validate'
+                sh 'terraform -chdir=AKS-Terraform-GitHub-Actions/aks validate'
             }
         }
 
@@ -61,11 +61,11 @@ pipeline {
             steps {
                 script {
                     if (params.Terraform_Action == 'plan') {
-                        sh "terraform -chdir=aks plan -var-file=${params.Environment}.tfvars"
+                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks plan -var-file=${params.Environment}.tfvars"
                     } else if (params.Terraform_Action == 'apply') {
-                        sh "terraform -chdir=aks apply -var-file=${params.Environment}.tfvars -auto-approve"
+                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks apply -var-file=${params.Environment}.tfvars -auto-approve"
                     } else if (params.Terraform_Action == 'destroy') {
-                        sh "terraform -chdir=aks destroy -var-file=${params.Environment}.tfvars -auto-approve"
+                        sh "terraform -chdir=AKS-Terraform-GitHub-Actions/aks destroy -var-file=${params.Environment}.tfvars -auto-approve"
                     } else {
                         error "Invalid Terraform_Action value"
                     }
