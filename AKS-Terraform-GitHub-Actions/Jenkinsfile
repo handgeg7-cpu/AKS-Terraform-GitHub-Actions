@@ -15,9 +15,9 @@ pipeline {
     agent any
 
     environment {
-        ARM_CLIENT_ID       = credentials('azure-client-id')
+        ARM_CLIENT_ID       = credentials('azure_client_id')
         ARM_CLIENT_SECRET   = credentials('azure-client-secret')
-        ARM_TENANT_ID       = credentials('azure-tenant-id')
+        ARM_TENANT_ID       = credentials('azure-tenant_id')
         ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
         TF_DIR = "AKS-Terraform-GitHub-Actions/aks"
     }
